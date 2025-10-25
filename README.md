@@ -1,20 +1,12 @@
-# Claude Code Plugins
+# Omniwaifu Claude Code Plugins
 
-Personal collection of Claude Code plugins.
+Personal marketplace of Claude Code plugins.
 
 ## Plugins
 
 ### workforce-assistant
-Eigent-inspired multi-agent patterns for Claude Code, emphasizing automation over manual commands.
 
-**Key Features:**
-- Automated tool usage logging and research capture
-- Safe mode validation for destructive commands
-- Context checkpointing and session reporting
-- Task decomposition and structured results
-- Specialized workforce agents (research, implementation, documentation)
-
-See [workforce-assistant/README.md](./workforce-assistant/README.md) for details.
+Automated hooks, task decomposition skills, and specialized agents. Integrates [Eigent](https://github.com/eigent-ai/eigent) patterns and [Serena](https://github.com/exa-labs/serena) symbol tools.
 
 ## Installation
 

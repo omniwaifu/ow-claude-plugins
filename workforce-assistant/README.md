@@ -1,10 +1,13 @@
 # Workforce Assistant Plugin
 
-Eigent-inspired multi-agent patterns for Claude Code, emphasizing **automation over manual commands**.
+Multi-agent patterns for Claude Code combining [Eigent](https://github.com/eigent-ai/eigent)-inspired workflows with [Serena](https://github.com/exa-labs/serena)-powered symbol-level code navigation, emphasizing **automation over manual commands**.
 
 ## Inspiration
 
-This plugin distills core mechanisms from [Eigent](https://github.com/eigent-ai/eigent), a multi-agent workforce system built on CAMEL-AI framework, and adapts them to Claude Code's plugin architecture.
+This plugin draws from two powerful systems:
+
+1. **[Eigent](https://github.com/eigent-ai/eigent)** - Multi-agent workforce system built on CAMEL-AI framework, providing patterns for task decomposition, parallel execution, and cross-session note-taking
+2. **[Serena](https://github.com/exa-labs/serena)** - MCP server with LSP-based symbol tools, enabling token-efficient codebase exploration and language-aware refactoring
 
 ## Architecture
 
@@ -27,17 +30,27 @@ This plugin distills core mechanisms from [Eigent](https://github.com/eigent-ai/
 
 Skills activate automatically based on context:
 
+**Workflow Skills (Eigent-inspired):**
 - **task-decomposer** - Analyzes complex tasks and breaks them into parallel subtasks
 - **result-formatter** - Formats task completions with verification checklists
 - **url-validator** - Enforces strict URL sourcing (search/visited/user-provided only)
+
+**Code Navigation Skills (Serena-inspired):**
+- **symbol-navigator** - Guides efficient code navigation using symbol tools over file reading
+- **code-structure-analyst** - Systematic codebase exploration with 70-90% token reduction
+- **refactoring-coordinator** - Coordinates safe, language-aware refactorings with verification
 
 ### Specialized Sub-Agents
 
 Workforce agents with focused expertise and tool access:
 
+**Task-Focused Agents (Eigent-inspired):**
 - **research-specialist** - Deep web research with comprehensive note-taking (WebSearch/WebFetch only)
 - **implementation-engineer** - Code implementation with continuous verification (full tool access)
 - **document-architect** - Documentation creation from artifacts (file operations only)
+
+**Code Analysis Agent (Serena-inspired):**
+- **code-archeologist** - Deep codebase understanding through symbol-level analysis (read-only, symbol tools preferred)
 
 ### Manual Commands (Minimal)
 
@@ -45,6 +58,51 @@ Only essential operations require manual invocation:
 
 - `/workspace-init` - Set up `.workspace/` and `.agent-notes/` directories
 - `/playbook-search <keyword>` - Query logged tool patterns
+
+## Serena Integration
+
+When used with the [Serena MCP server](https://github.com/exa-labs/serena), this plugin unlocks powerful symbol-level code operations:
+
+### Benefits
+
+**Token Efficiency:**
+- 70-90% reduction in context usage vs file reading
+- Symbol overviews show structure without full file contents
+- Targeted reads of specific functions/classes only
+
+**Language-Aware Refactoring:**
+- `rename_symbol` updates all references atomically
+- Respects language scope and semantics
+- No regex errors or missed references
+
+**Systematic Exploration:**
+- Three-phase analysis (Overview → Discovery → Deep Dive)
+- Automated codebase documentation in `.agent-notes/`
+- Symbol locations preserved for future reference
+
+### Quick Example
+
+**Without Serena:**
+```
+read_file("src/main.ts")  # 800 lines, 3200 tokens
+grep("authenticate")       # Noisy string matches
+```
+
+**With Serena:**
+```
+get_symbols_overview("src/main.ts")  # 50 lines, 200 tokens
+find_symbol("authenticate")           # Exact definitions only
+find_symbol("AuthService/login", include_body=true)  # Specific method, 30 tokens
+```
+
+### Getting Started with Serena
+
+1. Install serena: `pip install serena-mcp`
+2. Configure MCP server in Claude Code
+3. Skills automatically guide symbol tool usage
+4. Use `@code-archeologist` for codebase analysis
+
+**Full documentation:** See [docs/serena-integration.md](docs/serena-integration.md) for installation, workflows, and multi-agent patterns.
 
 ## Key Patterns from Eigent
 
@@ -132,16 +190,22 @@ workforce-assistant/
 │   ├── context-checkpoint.sh # Progress checkpoints
 │   └── session-reporter.sh  # Session completion reports
 ├── skills/
-│   ├── task-decomposer/     # Task breakdown skill
-│   ├── result-formatter/    # Structured results skill
-│   └── url-validator/       # URL sourcing policy skill
+│   ├── task-decomposer/     # Task breakdown skill (Eigent)
+│   ├── result-formatter/    # Structured results skill (Eigent)
+│   ├── url-validator/       # URL sourcing policy skill (Eigent)
+│   ├── symbol-navigator/    # Symbol tool guidance (Serena)
+│   ├── code-structure-analyst/ # Codebase exploration (Serena)
+│   └── refactoring-coordinator/ # Safe refactoring (Serena)
 ├── agents/
-│   ├── research-specialist.md      # Research-focused agent
-│   ├── implementation-engineer.md  # Implementation agent
-│   └── document-architect.md       # Documentation agent
+│   ├── research-specialist.md      # Research-focused agent (Eigent)
+│   ├── implementation-engineer.md  # Implementation agent (Eigent)
+│   ├── document-architect.md       # Documentation agent (Eigent)
+│   └── code-archeologist.md        # Codebase analysis agent (Serena)
 ├── commands/
 │   ├── workspace-init.md    # Initialize directories
 │   └── playbook-search.md   # Search tool patterns
+├── docs/
+│   └── serena-integration.md # Serena integration guide
 └── README.md
 ```
 
@@ -192,6 +256,19 @@ The plugin automatically creates `.agent-notes/` with:
 - Structured result with verification checklist
 - Tool usage logged for pattern building
 
+### Codebase Analysis with Serena
+
+**User:** "Understand the authentication system in this codebase"
+
+**Claude with Plugin + Serena:**
+- Code-archeologist agent activated
+- Uses `get_symbols_overview` to see structure without reading full files
+- Applies `find_symbol("authenticate")` to locate auth-related code
+- Runs `find_referencing_symbols` to map dependencies
+- Creates comprehensive documentation in `.agent-notes/auth-system.md`
+- 80% token reduction compared to file reading
+- Symbol locations preserved for implementation team
+
 ## Philosophy
 
 ### Automation Over Manual Commands
@@ -233,10 +310,15 @@ View plugin status:
 
 ## References
 
-- [Eigent Project](https://github.com/eigent-ai/eigent)
-- [CAMEL-AI Framework](https://github.com/camel-ai/camel)
+**Core Inspirations:**
+- [Eigent Project](https://github.com/eigent-ai/eigent) - Multi-agent workforce patterns
+- [Serena MCP Server](https://github.com/exa-labs/serena) - LSP-based symbol tools
+- [CAMEL-AI Framework](https://github.com/camel-ai/camel) - Foundation for Eigent
+
+**Documentation:**
 - [Claude Code Plugins Documentation](https://docs.claude.com/en/docs/claude-code/plugins)
-- [Eigent Insights Analysis](./eigent/insights.md)
+- [Serena Integration Guide](docs/serena-integration.md) - Full integration walkthrough
+- [Eigent Insights Analysis](./eigent/insights.md) - Original analysis
 
 ## Contributing
 
