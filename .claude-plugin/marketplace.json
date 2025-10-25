@@ -1,9 +1,9 @@
 {
-  "name": "claude-plugins-local",
+  "name": "omniwaifu-claude-plugins-local",
   "owner": {
     "name": "local"
   },
-  "description": "Local Claude Code plugins repository",
+  "description": "Local Omniwaifu Claude Code plugins repository",
   "plugins": [
     {
       "name": "workforce-assistant",
