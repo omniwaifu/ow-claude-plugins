@@ -1,0 +1,62 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "../hooks/tool-logger.sh",
+            "description": "Logs all tool usage to .agent-notes/tool-usage-log.md for playbook building"
+          }
+        ]
+      },
+      {
+        "matcher": "WebFetch|WebSearch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "../hooks/research-capture.sh",
+            "description": "Auto-captures research findings with citations to .agent-notes/research-*.md"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "../hooks/safe-mode-guard.sh",
+            "description": "Validates potentially destructive bash commands before execution"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "../hooks/context-checkpoint.sh",
+            "description": "Creates progress checkpoint before context compaction"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "../hooks/session-reporter.sh",
+            "description": "Generates session completion report with artifact summary"
+          }
+        ]
+      }
+    ]
+  }
+}

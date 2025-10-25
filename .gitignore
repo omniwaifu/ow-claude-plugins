@@ -1,0 +1,31 @@
+# Runtime directories (created by plugins when in use)
+.agent-notes/
+.workspace/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Node modules if any plugins use npm
+node_modules/
+
+# Python cache if any plugins use Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Temporary files
+*.tmp
+.cache/

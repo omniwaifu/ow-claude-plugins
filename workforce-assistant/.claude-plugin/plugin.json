@@ -1,0 +1,15 @@
+{
+  "name": "workforce-assistant",
+  "description": "Eigent-inspired multi-agent patterns: automated tool logging, research capture, safe mode validation, context checkpointing, and specialized workforce agents",
+  "version": "1.0.0",
+  "author": {
+    "name": "Claude Plugins"
+  },
+  "keywords": [
+    "automation",
+    "multi-agent",
+    "research",
+    "productivity",
+    "workflow"
+  ]
+}

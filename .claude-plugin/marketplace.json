@@ -1,0 +1,15 @@
+{
+  "name": "claude-plugins-local",
+  "owner": {
+    "name": "local"
+  },
+  "description": "Local Claude Code plugins repository",
+  "plugins": [
+    {
+      "name": "workforce-assistant",
+      "source": "./workforce-assistant",
+      "version": "1.0.0",
+      "description": "Eigent-inspired multi-agent patterns: automated tool logging, research capture, safe mode validation, context checkpointing, and specialized workforce agents"
+    }
+  ]
+}
