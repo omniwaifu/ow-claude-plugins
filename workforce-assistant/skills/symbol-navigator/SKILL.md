@@ -17,6 +17,28 @@ This skill teaches Claude to leverage symbol-level code understanding tools (pro
 - Analyzing dependencies and references
 - Before reading large files
 
+## Prerequisites
+
+**CRITICAL: Project must be activated BEFORE using symbol tools.**
+
+See the **serena-setup** skill for the complete workflow. Summary:
+
+```python
+# ALWAYS FIRST:
+activate_project(current_directory)
+check_onboarding_performed()
+
+# THEN use symbol tools:
+get_symbols_overview(...)
+find_symbol(...)
+```
+
+**Performance Note:**
+- First symbol tool calls may be slow (LSP parsing files)
+- Cache persists in `.serena/cache/`
+- Recommend pre-indexing: `serena project index`
+- Subsequent calls are instant (cache hits)
+
 ## Symbol Tools vs File Tools
 
 ### Use Symbol Tools When:
@@ -177,26 +199,34 @@ find_symbol(
    → Read specific section if symbol tools insufficient
 ```
 
-## Integration with Research Notes
+## Integration with Serena Memories
 
-When using symbol tools for research:
+When using symbol tools for research, persist findings with `write_memory()`:
 
-```markdown
-## Research: Authentication Flow
+```python
+write_memory("auth-flow-analysis", """
+# Authentication Flow Analysis
 
-**Symbol Discovery:**
-- `find_symbol("authenticate")` → Found 3 implementations
+## Symbol Discovery
+- `find_symbol("authenticate")` → Found 3 implementations:
   - `/auth/basic.ts:15` - BasicAuth/authenticate
   - `/auth/oauth.ts:42` - OAuthHandler/authenticate
   - `/auth/jwt.ts:28` - JWTVerifier/authenticate
 
-**Usage Analysis:**
+## Usage Analysis
 - `find_referencing_symbols("BasicAuth/authenticate")` → 12 references
   - Primary callers: LoginController, APIGateway
 
-**Decision:** Use JWTVerifier (modern, stateless, used in 40% of endpoints)
+## Decision
+Use JWTVerifier (modern, stateless, used in 40% of endpoints)
 
-**Source:** Symbol navigation via serena LSP tools
+## Symbol Locations
+- JWTVerifier/authenticate: src/auth/jwt.ts:28
+- LoginController: src/controllers/login.ts:42
+
+## Source
+Symbol navigation via Serena LSP tools
+""")
 ```
 
 ## Checking for Symbol Tool Availability
@@ -226,7 +256,7 @@ Before using symbol tools, check if LSP MCP server is available:
 1. find_symbol(name_path="DatabaseConnection")
 2. find_referencing_symbols(name_path="DatabaseConnection", ...)
 3. Analyze all call sites before making changes
-4. Document in .agent-notes/
+4. write_memory() to persist findings
 ```
 
 ### Pattern: Rename Safely

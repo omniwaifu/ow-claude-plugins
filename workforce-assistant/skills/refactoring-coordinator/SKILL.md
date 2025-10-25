@@ -17,6 +17,32 @@ Guides safe, systematic refactorings using symbol-level operations from LSP tool
 - Restructuring code organization
 - Before symbol-based modifications
 
+## Prerequisites
+
+**CRITICAL: Project must be activated and onboarded BEFORE refactoring.**
+
+See the **serena-setup** skill for the complete workflow. Before refactoring:
+
+```python
+# 1. Activate project
+activate_project(current_directory)
+
+# 2. Check if onboarded
+check_onboarding_performed()
+
+# 3. Read style guide to follow conventions
+style_guide = read_memory("code_style")
+# Ensure refactorings follow project patterns
+
+# 4. THEN use refactoring tools
+rename_symbol(...)
+replace_symbol_body(...)
+```
+
+**Performance Note:**
+- First symbol tool calls may be slow (LSP parsing)
+- Pre-index for instant performance: `serena project index`
+
 ## Core Refactoring Workflow
 
 ### Standard Pattern: Find → Verify → Refactor → Test

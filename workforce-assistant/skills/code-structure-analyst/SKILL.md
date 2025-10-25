@@ -1,345 +1,508 @@
 ---
 name: code-structure-analyst
-description: Systematic codebase exploration workflow using symbol-level tools. Teaches the Overview → Symbol Search → Targeted Reading pattern for efficient context usage and architectural understanding.
+description: Teaches systematic codebase exploration using Serena's built-in onboarding system. Guides the Overview → Symbol Search → Targeted Reading pattern for efficient architectural understanding.
 ---
 
 # Code Structure Analyst Skill
 
 ## Purpose
 
-Provides a systematic, token-efficient workflow for understanding codebase structure using symbol-level operations. Emphasizes building understanding incrementally rather than reading entire files.
+Teaches systematic, token-efficient codebase exploration by following Serena's built-in `onboarding()` workflow combined with symbol-level operations.
+
+**Key Principle:** Use Serena's onboarding system, don't duplicate it.
 
 ## When This Skill Activates
 
-- Onboarding to new codebases
+- After calling `check_onboarding_performed()` and it returns "not performed"
+- When exploring unfamiliar codebases
+- Planning major features or refactorings
 - Understanding architectural patterns
-- Planning feature implementations
-- Analyzing code organization
-- Before major refactorings
+- First-time project analysis
 
-## Core Workflow: Three-Phase Analysis
+## Prerequisites
 
-### Phase 1: Architectural Overview
+**CRITICAL: This skill assumes Serena's activation workflow is complete.**
 
-**Goal:** Understand high-level organization without reading code
+See the **serena-setup** skill for the complete workflow. You should have already:
 
-**Steps:**
-1. **Directory Structure**
-   ```
-   list_dir(".", recursive=true)
-   ```
-   Identify: src/, tests/, docs/, config/
+```python
+# 1. Activated project
+activate_project(current_directory)
 
-2. **Top-Level Symbols** (if LSP tools available)
-   ```
-   get_symbols_overview("src/")
-   ```
-   For each major file, see: Classes, top-level functions, exports
+# 2. Checked onboarding status
+status = check_onboarding_performed()
 
-3. **Pattern Recognition**
-   - Identify framework (React/Vue/Django/Rails/etc)
-   - Find entry points (main.ts, app.py, index.js)
-   - Locate configuration (config/, .env, package.json)
+# 3a. If not onboarded:
+if "not performed" in status:
+    instructions = onboarding()
+    # THIS SKILL teaches how to follow those instructions
 
-**Output:** High-level architecture map in `.agent-notes/architecture-overview.md`
-
-### Phase 2: Component Discovery
-
-**Goal:** Identify key components and their relationships
-
-**Steps:**
-1. **Find Core Abstractions**
-   ```
-   find_symbol(name_path="", include_kinds=[5])  # All classes
-   find_symbol(name_path="", include_kinds=[12]) # All functions
-   ```
-   Build component list
-
-2. **Analyze Dependencies**
-   For each major component:
-   ```
-   find_symbol("ComponentName", depth=1)
-   find_referencing_symbols("ComponentName", ...)
-   ```
-   Understand: What it does, what uses it
-
-3. **Identify Patterns**
-   - Controllers, Services, Models (MVC)
-   - Components, Hooks, Stores (React)
-   - Handlers, Middleware, Routes (Backend)
-
-**Output:** Component relationship map
-
-### Phase 3: Targeted Deep Dives
-
-**Goal:** Understand specific implementations only when needed
-
-**Steps:**
-1. **Selective Reading**
-   ```
-   find_symbol("SpecificFunction", include_body=true)
-   ```
-   Read only relevant symbols
-
-2. **Context Expansion** (if needed)
-   ```
-   read_file("path/to/file.ts", start_line=X, end_line=Y)
-   ```
-   Get surrounding context only when symbol view insufficient
-
-3. **Documentation**
-   Record findings in `.agent-notes/` with symbol locations
-
-## Symbol-First Analysis Pattern
-
-### Anti-Pattern (File-Heavy)
+# 3b. If already onboarded:
+else:
+    list_memories()
+    # Use existing knowledge
 ```
-❌ 1. list_dir("src/", recursive=true)
-❌ 2. read_file("src/components/Dashboard.tsx")  # 800 lines
-❌ 3. read_file("src/components/Chart.tsx")      # 600 lines
-❌ 4. read_file("src/api/client.ts")             # 400 lines
-❌ 5. grep("API_URL")                            # Many false positives
+
+## Integration with Serena's Onboarding
+
+When you call `onboarding()`, Serena returns a detailed prompt instructing you to gather project information. This skill teaches **HOW** to efficiently gather that information using symbol-first operations.
+
+### Serena's Onboarding Requirements
+
+The `onboarding()` prompt asks you to identify:
+
+1. **Project's purpose** - What it does
+2. **Tech stack** - Languages, frameworks, libraries
+3. **Code style and conventions** - Naming, types, docstrings
+4. **Commands** - Testing, formatting, linting
+5. **Codebase structure** - Organization
+6. **Entry points** - How to run the project
+7. **Guidelines** - Patterns, standards, design principles
+
+### How to Gather This Information Efficiently
+
+## Phase 1: High-Level Discovery (5-10% of context)
+
+**Goal:** Quick overview without reading full files
+
+```python
+# 1. Directory structure
+dir_structure = list_dir(".", recursive=True)
+# Identify: src/, tests/, docs/, config/
+
+# 2. Configuration files (read these - small and informative)
+package_info = read_file("package.json")  # Or requirements.txt, Cargo.toml, etc.
+readme = read_file("README.md")
+
+# 3. Symbol overview of main entry point
+main_symbols = get_symbols_overview("src/main.ts")  # Or app.py, index.js, etc.
+# NOTE: First call may be slow (LSP parsing)
+# Recommend to user if slow: `serena project index`
+
+# 4. Identify framework from imports/structure
+# React? Vue? Django? Express? Rails?
 ```
-**Problem:** Reading full files wastes tokens, hard to see structure
 
-### Recommended Pattern (Symbol-First)
+**Output Format (use write_memory):**
+```python
+write_memory("architecture_overview", """
+# Architecture Overview
+
+## Project Type
+[React app / Django backend / CLI tool / etc]
+
+## Technology Stack
+- Language: TypeScript
+- Framework: React 18
+- State: Redux Toolkit
+- Styling: Tailwind CSS
+- Backend: Express + PostgreSQL
+
+## Directory Structure
+- `/src/components` - React components
+- `/src/services` - Business logic
+- `/src/api` - API client
+- `/tests` - Test files
+- `/config` - Configuration
+
+## Entry Points
+- Frontend: src/index.tsx
+- Backend: src/server.ts
+""")
 ```
-✓ 1. list_dir("src/", recursive=true)
-✓ 2. get_symbols_overview("src/components/Dashboard.tsx")
-    → See: Dashboard, ChartWidget, DataTable (no bodies)
-✓ 3. find_symbol("Dashboard", depth=1)
-    → Get component + hooks/methods
-✓ 4. find_symbol("fetchDashboardData", include_body=true)
-    → Read only the data fetching function
-✓ 5. find_referencing_symbols("API_URL", ...)
-    → See actual usage sites
+
+## Phase 2: Symbol-Based Component Discovery (20-30% of context)
+
+**Goal:** Identify major code entities and their relationships
+
+```python
+# 1. Find all classes
+classes = find_symbol(
+    name_path="",
+    include_kinds=[5],  # Classes
+    relative_path="src/"
+)
+
+# 2. Find top-level functions
+functions = find_symbol(
+    name_path="",
+    include_kinds=[12],  # Functions
+    relative_path="src/"
+)
+
+# 3. For each major component, get structure
+for component in major_components:
+    structure = find_symbol(component, depth=1)
+    # See methods/properties without bodies
+
+# 4. Understand relationships
+for key_component in key_components:
+    usages = find_referencing_symbols(
+        name_path=key_component,
+        relative_path=f"src/{component_file}"
+    )
 ```
-**Benefit:** 70-90% token reduction, clearer structure
 
-## Architectural Analysis Templates
+**Output Format:**
+```python
+write_memory("architecture_overview", """
+[Previous content...]
 
-### For Web Applications
+## Key Symbols
 
+### Frontend Components
+- App: src/App.tsx:10 (main component)
+- Dashboard: src/components/Dashboard.tsx:15
+- UserProfile: src/components/UserProfile.tsx:22
+
+### Services
+- AuthService: src/services/auth.ts:8
+  - login: Line 15
+  - logout: Line 42
+  - verifyToken: Line 68
+- PaymentService: src/services/payment.ts:10
+
+### API Layer
+- apiClient: src/api/client.ts:5
+- endpoints: src/api/endpoints.ts:8
+
+## Dependencies
+- Dashboard uses AuthService (5 calls)
+- UserProfile uses AuthService (3 calls)
+- PaymentService uses apiClient (8 calls)
+""")
+```
+
+## Phase 3: Pattern Recognition (minimal additional context)
+
+**Goal:** Understand conventions without reading full implementations
+
+```python
+# 1. Sample one file from each category to understand patterns
+sample_component = find_symbol("Dashboard", depth=1)
+# See: functional component? class component? hooks used?
+
+sample_service = find_symbol("AuthService", depth=1)
+# See: class-based? method structure?
+
+# 2. Check test structure (read one test file)
+sample_test = read_file("tests/example.test.ts")
+# Understand: testing framework, patterns
+
+# 3. Check for style guides
+if file_exists(".eslintrc.json"):
+    eslint_config = read_file(".eslintrc.json")
+if file_exists("pyproject.toml"):
+    pyproject = read_file("pyproject.toml")
+```
+
+**Output Format:**
+```python
+write_memory("code_style", """
+# Code Style & Conventions
+
+## Language & Tooling
+- TypeScript with strict mode
+- ESLint + Prettier
+- Jest for testing
+
+## Conventions
+- React: Functional components with hooks
+- File naming: PascalCase for components, camelCase for utilities
+- Export style: Named exports preferred
+- State management: Redux Toolkit slices
+
+## Patterns
+- Services: Class-based with dependency injection
+- Components: Function components with custom hooks
+- Tests: Co-located in __tests__ directories
+- API calls: Centralized in services layer
+
+## Type Annotations
+- All functions have return types
+- Props interfaces for all components
+- Strict null checks enabled
+""")
+```
+
+## Phase 4: Command Discovery
+
+**Goal:** Find how to test, build, run the project
+
+```python
+# 1. Read package.json scripts (or Makefile, etc.)
+package_json = read_file("package.json")
+
+# 2. Check for CI config
+if file_exists(".github/workflows/ci.yml"):
+    ci_config = read_file(".github/workflows/ci.yml")
+
+# 3. Read docs if available
+if file_exists("CONTRIBUTING.md"):
+    contrib = read_file("CONTRIBUTING.md")
+```
+
+**Output Format:**
+```python
+write_memory("suggested_commands", """
+# Suggested Commands
+
+## Development
+- Start dev server: `npm run dev`
+- Build: `npm run build`
+- Preview build: `npm run preview`
+
+## Testing
+- Run all tests: `npm test`
+- Watch mode: `npm test -- --watch`
+- Coverage: `npm run test:coverage`
+- E2E tests: `npm run test:e2e`
+
+## Linting & Formatting
+- Lint: `npm run lint`
+- Fix lint: `npm run lint:fix`
+- Format: `npm run format`
+- Type check: `npm run type-check`
+
+## Database
+- Migrations: `npm run db:migrate`
+- Seed: `npm run db:seed`
+- Reset: `npm run db:reset`
+
+## Deployment
+- Build production: `npm run build:prod`
+- Deploy: `npm run deploy`
+""")
+```
+
+## Phase 5: Task Completion Checklist
+
+```python
+write_memory("task_completion_checklist", """
+# Task Completion Checklist
+
+When a coding task is complete, ensure:
+
+## Code Quality
+- [ ] ESLint passes: `npm run lint`
+- [ ] Prettier formatted: `npm run format`
+- [ ] TypeScript compiles: `npm run type-check`
+
+## Testing
+- [ ] Unit tests pass: `npm test`
+- [ ] New tests added for new features
+- [ ] Coverage meets threshold (>80%)
+- [ ] E2E tests pass if applicable
+
+## Documentation
+- [ ] JSDoc comments for public APIs
+- [ ] README updated if needed
+- [ ] CHANGELOG.md updated
+
+## Review
+- [ ] Code follows style guide (see code_style.md)
+- [ ] No console.log/debugger statements
+- [ ] Error handling implemented
+- [ ] Accessibility considered (WCAG 2.1)
+""")
+```
+
+## Symbol-First vs File-Heavy Comparison
+
+### Anti-Pattern: File-Heavy Approach
+```python
+❌ # Reading full files (wastes 90% context)
+read_file("src/components/Dashboard.tsx")     # 800 lines
+read_file("src/services/auth.ts")             # 600 lines
+read_file("src/api/client.ts")                # 400 lines
+
+# Total: ~2000 lines read, most not needed
+```
+
+### Recommended: Symbol-First Approach
+```python
+✅ # Get overview first
+get_symbols_overview("src/components/Dashboard.tsx")  # 20 lines
+# → See: Dashboard, useAuth, useDashboardData
+
+✅ # Get class structure without implementation
+find_symbol("AuthService", depth=1)  # 50 lines
+# → See: all methods, no bodies
+
+✅ # Read ONLY what's needed
+find_symbol("AuthService/login", include_body=True)  # 15 lines
+# → Just the login method
+
+# Total: ~85 lines read, highly relevant
+# Savings: 95% context reduction
+```
+
+## Integration with Other Skills
+
+### With serena-setup
+```
+serena-setup: activate → check onboarding
+  ↓ (if not onboarded)
+code-structure-analyst: Follow onboarding() prompt
+  ↓
+symbol-navigator: Efficient tool selection
+  ↓
+write_memory(): Persist findings
+```
+
+### With task-decomposer
+```python
+# After onboarding, task decomposer can:
+arch = read_memory("architecture_overview")
+style = read_memory("code_style")
+commands = read_memory("suggested_commands")
+
+# Use this knowledge to decompose tasks intelligently
+```
+
+## Performance Optimization
+
+### First-Time Slowness
+
+**Problem:** First symbol tool calls may be slow (LSP parsing)
+
+**What to tell user:**
 ```markdown
-## Architecture Analysis: [Project Name]
+## Performance Note
 
-### Technology Stack
-- Framework: [Detected from package.json/imports]
-- Language: [TypeScript/JavaScript/Python/etc]
-- State Management: [Redux/Context/Vuex/etc]
-- Backend: [Express/Django/Rails/etc]
+First symbol exploration may take 10-60 seconds (LSP parsing files).
 
-### Directory Structure
-[From list_dir with annotations]
+**Recommendation:**
+For instant subsequent calls, run in terminal:
 
-### Core Components (from symbol analysis)
+    uvx --from git+https://github.com/oraios/serena serena project index
 
-**Frontend:**
-- Components: [List from find_symbol with kinds=[5])]
-- Hooks/Utilities: [Custom hooks found]
-- State Management: [Stores/reducers]
-
-**Backend:**
-- Routes: [API endpoints]
-- Controllers: [Request handlers]
-- Services: [Business logic]
-- Models: [Data layer]
-
-### Key Entry Points
-- Frontend: [src/index.tsx:15 - App component]
-- Backend: [src/main.py:42 - create_app()]
-- API Routes: [src/routes/api.ts:10 - router definition]
-
-### Dependencies & References
-[From find_referencing_symbols analysis]
-
-### Next Investigation Areas
-- [ ] Authentication flow
-- [ ] Data fetching patterns
-- [ ] Error handling
+This creates `.serena/cache/` so future symbol calls are <1 second.
 ```
 
-### For Libraries/SDKs
+### Progressive Exploration
 
-```markdown
-## Library Analysis: [Name]
+Don't analyze everything at once:
 
-### Public API Surface (from symbol overview)
-- Classes: [Exported classes]
-- Functions: [Public functions]
-- Types: [Type definitions]
+```python
+# Good: Start broad, narrow down
+get_symbols_overview("src/")           # All files overview
+find_symbol("AuthService", depth=1)    # One component structure
+find_symbol("AuthService/login", include_body=True)  # One method
 
-### Internal Structure
-- Core: [Main implementation symbols]
-- Utils: [Helper functions]
-- Tests: [Test organization]
-
-### Usage Patterns (from find_referencing_symbols)
-[How public API is used internally]
-
-### Extension Points
-[Interfaces, abstract classes, hooks]
+# Bad: Try to analyze everything deeply
+for file in all_files:
+    for symbol in get_symbols_overview(file):
+        find_symbol(symbol, depth=3, include_body=True)  # Too much!
 ```
 
-## Language-Specific Patterns
+## Onboarding Completion Checklist
 
-### TypeScript/JavaScript
-```
-# Phase 1: Find exports
-find_symbol(name_path="", relative_path="src/index.ts")
+Before considering onboarding complete:
 
-# Phase 2: Analyze classes
-find_symbol(name_path="ClassName", depth=2)
+**Memories Written:**
+- [ ] `architecture_overview.md` - Tech stack, structure, entry points
+- [ ] `code_style.md` - Conventions, patterns, tooling
+- [ ] `suggested_commands.md` - Test/lint/build/run commands
+- [ ] `task_completion_checklist.md` - What to do when done
 
-# Phase 3: Find React components
-find_symbol(name_path="", include_kinds=[12], relative_path="src/components/")
-# Look for functions returning JSX
-```
+**Information Gathered:**
+- [ ] Project purpose understood
+- [ ] Tech stack identified
+- [ ] Major components mapped with symbol locations
+- [ ] Testing strategy understood
+- [ ] Development commands documented
+- [ ] Code conventions identified
 
-### Python
-```
-# Phase 1: Find classes
-find_symbol(name_path="", include_kinds=[5])
+**Token Efficiency:**
+- [ ] Used symbol tools instead of reading full files
+- [ ] Context usage < 30% of budget
+- [ ] Focused on structure, not implementation details
 
-# Phase 2: Find methods
-find_symbol(name_path="ClassName", depth=1)
+## Example: Complete Onboarding Session
 
-# Phase 3: Find imports
-search_for_pattern(substring_pattern="^import |^from ", context_lines_before=0)
-```
+**User:** "Help me understand this React codebase"
 
-### Java
-```
-# Phase 1: Find packages
-find_symbol(name_path="", include_kinds=[4])
+**Your Process:**
 
-# Phase 2: Find classes/interfaces
-find_symbol(name_path="", include_kinds=[5,11])
+```python
+# 0. Activation (from serena-setup skill)
+activate_project(current_directory)
+status = check_onboarding_performed()
+# → "Onboarding not performed yet"
 
-# Phase 3: Analyze inheritance
-find_referencing_symbols(name_path="BaseClass", ...)
-```
+instructions = onboarding()
+# → Returns detailed prompt
 
-## Integration with Workforce Patterns
+# 1. High-level discovery (5% context)
+structure = list_dir(".", recursive=True)
+package = read_file("package.json")
+readme = read_file("README.md")
 
-### With Task Decomposer
+main_overview = get_symbols_overview("src/App.tsx")
+# (may be slow first time - LSP parsing)
 
-When decomposing complex feature implementation:
+# 2. Symbol-based discovery (20% context)
+components = find_symbol("", include_kinds=[12], relative_path="src/components/")
+# → 15 React components found
 
-```markdown
-## Task Decomposition: Add User Profile Feature
+services = find_symbol("", include_kinds=[5], relative_path="src/services/")
+# → 5 service classes found
 
-### Research Phase (This Skill)
-1. Analyze current user authentication
-   - find_symbol("User")
-   - find_referencing_symbols("User", ...)
-2. Understand data layer patterns
-   - get_symbols_overview("src/models/")
-3. Identify UI component patterns
-   - find_symbol("", include_kinds=[12], relative_path="src/components/")
+# Sample one of each
+dashboard = find_symbol("Dashboard", depth=1)
+# → Functional component with useAuth, useDashboardData hooks
 
-### Implementation Plan (From Analysis)
-Based on structure analysis:
-- [Subtask 1] Create UserProfile model (pattern matches User model)
-- [Subtask 2] Add profile routes (pattern matches auth routes)
-- [Subtask 3] Build profile component (pattern matches existing components)
-```
+auth_service = find_symbol("AuthService", depth=1)
+# → Methods: login, logout, verifyToken, refreshToken
 
-### With Research Specialist
+# 3. Understand patterns (5% context)
+sample_test = read_file("src/__tests__/Dashboard.test.tsx")
+# → Using Jest + React Testing Library
 
-```markdown
-**Codebase Research Workflow:**
+eslint = read_file(".eslintrc.json")
+# → Airbnb style guide
 
-1. Code-Structure-Analyst explores architecture
-2. Documents structure in .agent-notes/architecture.md
-3. Research Specialist reads notes + performs targeted symbol searches
-4. Implementation Engineer uses structure knowledge for implementation
-```
+# 4. Document findings (write_memory)
+write_memory("architecture_overview", """...""")
+write_memory("code_style", """...""")
+write_memory("suggested_commands", """...""")
+write_memory("task_completion_checklist", """...""")
 
-## Efficient Context Management
-
-### Context Budget Strategy
-
-**Phase 1 (Overview):** ~5-10% of context
-- Directory listings
-- Symbol overviews
-- Pattern identification
-
-**Phase 2 (Discovery):** ~20-30% of context
-- Symbol searches with depth
-- Reference analysis
-- Component mapping
-
-**Phase 3 (Deep Dive):** ~60-70% of context
-- Targeted symbol body reads
-- Specific file sections
-- Implementation details
-
-### When to Checkpoint
-
-Create checkpoint in `.agent-notes/` after:
-- Completing architectural overview
-- Discovering major components
-- Before switching to implementation
-- When approaching context limits
-
-## Output Format
-
-Always structure findings as:
-
-```markdown
-## Code Structure Analysis: [Component/Module]
-
-**Analysis Date:** [ISO timestamp]
-**Scope:** [What was analyzed]
-**Method:** [Symbol tools used]
-
-### Structure Summary
-[High-level organization]
-
-### Key Symbols Discovered
-| Symbol | Type | Location | Purpose |
-|--------|------|----------|---------|
-| ClassName | Class | src/models/user.ts:15 | User data model |
-| processPayment | Function | src/services/payment.ts:42 | Payment processing |
-
-### Dependencies
-[What this uses]
-
-### Dependents
-[What uses this]
-
-### Patterns Observed
-[Architectural/code patterns]
-
-### Recommendations
-[Suggestions for implementation/refactoring]
-
-### Symbol Locations for Future Reference
-[name_path values for symbol tools]
+# Done! Total context: ~30%
 ```
 
-## Success Criteria
+**Next time:**
+```python
+activate_project(current_directory)
+status = check_onboarding_performed()
+# → "Onboarding already performed. Memories: [...]"
 
-Analysis is complete when:
-- [ ] High-level architecture documented
-- [ ] Major components identified with symbol locations
-- [ ] Key dependencies mapped
-- [ ] Entry points documented
-- [ ] Patterns recognized
-- [ ] Recommendations provided
-- [ ] Notes written to `.agent-notes/`
+# Load existing knowledge
+arch = read_memory("architecture_overview")
+# Ready to work immediately!
+```
 
 ## Common Mistakes to Avoid
 
-1. **Reading files before symbol overview** - Wastes tokens
-2. **Not using depth parameter** - Miss component structure
-3. **Forgetting to document symbol locations** - Can't find code later
-4. **Over-analyzing** - Get 80% understanding with 20% effort
-5. **Not checking for LSP tools** - Assume availability
+1. **Duplicating onboarding** → Use Serena's built-in `onboarding()` tool
+2. **Reading files before symbols** → Get overview first
+3. **Using Write instead of write_memory** → Bypass Serena's memory system
+4. **Creating .agent-notes/** → Use `.serena/memories/` instead
+5. **Not checking activation** → Symbol tools won't work
+6. **Over-analyzing** → Get 80% understanding, not 100%
+7. **Ignoring first-call slowness** → Warn user, recommend pre-indexing
+
+## Philosophy
+
+- **Use Serena's Systems**: onboarding() provides the prompt, this skill teaches execution
+- **Symbol-First Always**: Overview → Depth → Targeted reads
+- **Memory-Driven**: write_memory() for cross-session continuity
+- **Performance-Aware**: Expect LSP slowness, recommend pre-indexing
+- **Efficient**: 70-90% token reduction via symbol tools
 
 ## References
 
-- Symbol Navigator skill for tool selection
-- Eigent decomposition pattern (insights.md:16-45)
-- Serena symbol operations (serena docs)
+- serena-setup skill: Complete activation workflow
+- symbol-navigator skill: Tool selection guidance
+- Serena onboarding system: Built-in workflow

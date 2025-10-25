@@ -1,180 +1,238 @@
 # Workforce Assistant Plugin
 
-Multi-agent patterns for Claude Code combining [Eigent](https://github.com/eigent-ai/eigent)-inspired workflows with [Serena](https://github.com/exa-labs/serena)-powered symbol-level code navigation, emphasizing **automation over manual commands**.
+Multi-agent patterns for Claude Code that teaches effective use of [Serena](https://github.com/oraios/serena)'s LSP-based symbol tools combined with [Eigent](https://github.com/eigent-ai/eigent)-inspired workforce patterns.
 
-## Inspiration
+## Prerequisites
 
-This plugin draws from two powerful systems:
+**THIS PLUGIN REQUIRES SERENA MCP SERVER.**
 
-1. **[Eigent](https://github.com/eigent-ai/eigent)** - Multi-agent workforce system built on CAMEL-AI framework, providing patterns for task decomposition, parallel execution, and cross-session note-taking
-2. **[Serena](https://github.com/exa-labs/serena)** - MCP server with LSP-based symbol tools, enabling token-efficient codebase exploration and language-aware refactoring
+Serena provides the symbol-level code navigation tools this plugin teaches you to use:
+- `activate_project` - Start LSP server for a project
+- `get_symbols_overview` - See file structure without reading full contents
+- `find_symbol` - Locate classes/functions/methods precisely
+- `find_referencing_symbols` - Map dependencies
+- `rename_symbol` - Language-aware refactoring
+- `onboarding` - Built-in project familiarization workflow
+- `write_memory` / `read_memory` - Cross-session knowledge persistence
+
+### Install Serena
+
+```bash
+# For Claude Code (from project directory)
+claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project "$(pwd)"
+
+# Verify installation
+# In Claude Code, try: activate_project(current_directory)
+```
+
+See [Serena's documentation](https://github.com/oraios/serena) for detailed setup.
+
+## What This Plugin Does
+
+This plugin teaches Claude Code to:
+
+1. **Use Serena's Built-In Systems:**
+   - Project activation workflow (`activate_project`)
+   - Onboarding system (`check_onboarding_performed`, `onboarding`)
+   - Memory persistence (`.serena/memories/` via `write_memory`, `read_memory`)
+   - Symbol-first code navigation
+
+2. **Apply Eigent-Inspired Patterns:**
+   - Multi-agent task decomposition
+   - Parallel execution strategies
+   - Verification-driven workflows
+   - Structured result formatting
+
+## Core Workflow
+
+### Standard Serena Workflow (Plugin Teaches This)
+
+```markdown
+1. activate_project("/path/to/project")
+   → Starts LSP server, loads config
+
+2. check_onboarding_performed()
+   → See if project has been explored before
+
+3. If not onboarded:
+   - onboarding() → Returns exploration prompt
+   - Use symbol tools to explore codebase
+   - write_memory() multiple times to persist findings
+
+4. If already onboarded:
+   - list_memories() → See available knowledge
+   - read_memory(name) → Load relevant memories
+
+5. Use symbol tools (first calls may be slow while LSP parses)
+   → Recommend pre-indexing: `serena project index`
+
+6. write_memory() to save new discoveries
+```
+
+### Pre-Indexing for Performance
+
+**Problem:** First symbol tool calls are slow (LSP parsing files)
+
+**Solution:**
+```bash
+# From project root
+uvx --from git+https://github.com/oraios/serena serena project index
+```
+
+This creates `.serena/cache/document_symbols_cache_*.pkl` so subsequent calls are instant.
 
 ## Architecture
 
-### Automated Hooks (Primary Layer)
+### Skills (Auto-Activating)
 
-**PostToolUse Hooks:**
-- **Tool Lifecycle Logger** - Auto-logs all tool usage to `.agent-notes/tool-usage-log.md`
-- **Research Note Capture** - Automatically captures WebFetch/WebSearch results with citations to `.agent-notes/research-YYYY-MM-DD.md`
+**Serena Workflow Skills:**
+- **serena-setup** - Teaches activation → onboarding → memory workflow
+- **symbol-navigator** - Guides symbol tool usage over file operations
+- **code-structure-analyst** - Systematic exploration using Serena's onboarding
+- **refactoring-coordinator** - Safe refactorings with symbol tools
 
-**PreToolUse Hooks:**
-- **Safe Mode Guardian** - Validates destructive Bash commands before execution
+**Eigent Workflow Skills:**
+- **task-decomposer** - Breaks complex tasks into parallel subtasks
+- **result-formatter** - Structured completion reports
+- **url-validator** - Enforces URL sourcing policy
 
-**PreCompact Hooks:**
-- **Context Checkpoint** - Creates progress summaries before context compaction
+### Agents (Specialized)
 
-**SessionEnd Hooks:**
-- **Session Reporter** - Generates structured completion reports with artifact inventory
+**Serena-Powered:**
+- **code-archeologist** - Uses Serena's onboarding to explore codebases (read-only)
 
-### Autonomous Skills
+**Eigent-Inspired:**
+- **research-specialist** - Web research with memory persistence
+- **implementation-engineer** - Code implementation with verification
+- **document-architect** - User-facing documentation creation
 
-Skills activate automatically based on context:
+### Hooks (Minimal)
 
-**Workflow Skills (Eigent-inspired):**
-- **task-decomposer** - Analyzes complex tasks and breaks them into parallel subtasks
-- **result-formatter** - Formats task completions with verification checklists
-- **url-validator** - Enforces strict URL sourcing (search/visited/user-provided only)
-
-**Code Navigation Skills (Serena-inspired):**
-- **symbol-navigator** - Guides efficient code navigation using symbol tools over file reading
-- **code-structure-analyst** - Systematic codebase exploration with 70-90% token reduction
-- **refactoring-coordinator** - Coordinates safe, language-aware refactorings with verification
-
-### Specialized Sub-Agents
-
-Workforce agents with focused expertise and tool access:
-
-**Task-Focused Agents (Eigent-inspired):**
-- **research-specialist** - Deep web research with comprehensive note-taking (WebSearch/WebFetch only)
-- **implementation-engineer** - Code implementation with continuous verification (full tool access)
-- **document-architect** - Documentation creation from artifacts (file operations only)
-
-**Code Analysis Agent (Serena-inspired):**
-- **code-archeologist** - Deep codebase understanding through symbol-level analysis (read-only, symbol tools preferred)
-
-### Manual Commands (Minimal)
-
-Only essential operations require manual invocation:
-
-- `/workspace-init` - Set up `.workspace/` and `.agent-notes/` directories
-- `/playbook-search <keyword>` - Query logged tool patterns
-
-## Serena Integration
-
-When used with the [Serena MCP server](https://github.com/exa-labs/serena), this plugin unlocks powerful symbol-level code operations:
-
-### Benefits
-
-**Token Efficiency:**
-- 70-90% reduction in context usage vs file reading
-- Symbol overviews show structure without full file contents
-- Targeted reads of specific functions/classes only
-
-**Language-Aware Refactoring:**
-- `rename_symbol` updates all references atomically
-- Respects language scope and semantics
-- No regex errors or missed references
-
-**Systematic Exploration:**
-- Three-phase analysis (Overview → Discovery → Deep Dive)
-- Automated codebase documentation in `.agent-notes/`
-- Symbol locations preserved for future reference
-
-### Quick Example
-
-**Without Serena:**
-```
-read_file("src/main.ts")  # 800 lines, 3200 tokens
-grep("authenticate")       # Noisy string matches
-```
-
-**With Serena:**
-```
-get_symbols_overview("src/main.ts")  # 50 lines, 200 tokens
-find_symbol("authenticate")           # Exact definitions only
-find_symbol("AuthService/login", include_body=true)  # Specific method, 30 tokens
-```
-
-### Getting Started with Serena
-
-1. Install serena: `pip install serena-mcp`
-2. Configure MCP server in Claude Code
-3. Skills automatically guide symbol tool usage
-4. Use `@code-archeologist` for codebase analysis
-
-**Full documentation:** See [docs/serena-integration.md](docs/serena-integration.md) for installation, workflows, and multi-agent patterns.
-
-## Key Patterns from Eigent
-
-### 1. Task Decomposition with Context Separation
-- Coordinator gets full context
-- Workers receive focused task descriptions
-- Prevents context pollution
-
-### 2. Parallel Task Execution
-- Independent subtasks run concurrently
-- Dependency-aware scheduling
-- Aggregated results
-
-### 3. Note-Taking System
-- Detailed research capture with citations
-- Cross-session continuity
-- Implementation decision rationale
-
-### 4. Strict URL Policy
-- Only use URLs from search results, visited pages, or user input
-- Never fabricate or guess URLs
-- Traceability for all sources
-
-### 5. Continuous Verification
-- Build → Test → Verify at every step
-- No extensive coding without checkpoints
-- Fix issues immediately
-
-### 6. Structured Output
-- TaskResult format for completions
-- Verification checklists
-- Clear success criteria
+**PreToolUse:**
+- **safe-mode-guard** - Validates destructive Bash commands
 
 ## Installation
 
-### Option 1: Local Development
 ```bash
-# Clone into your Claude plugins directory
+# Option 1: Clone to plugins directory
 git clone <this-repo> ~/.claude/plugins/workforce-assistant
 
-# Or symlink from your development location
+# Option 2: Symlink from development location
 ln -s /path/to/workforce-assistant ~/.claude/plugins/workforce-assistant
-```
-
-### Option 2: Plugin System
-```
-/plugin install workforce-assistant@local
 ```
 
 ## Quick Start
 
-1. **Initialize workspace:**
-   ```
-   /workspace-init
-   ```
+### First Time with a Project
 
-2. **Let automation work:**
-   - Research is auto-captured to `.agent-notes/research-*.md`
-   - Tool usage logged to `.agent-notes/tool-usage-log.md`
-   - Safe mode validates destructive commands
-   - Context checkpoints created automatically
+```
+User: Understand the authentication system
+Claude:
+  1. activate_project(current_directory)
+  2. check_onboarding_performed()
+  3. (If not onboarded) onboarding()
+  4. Use symbol tools to explore auth
+  5. write_memory("auth-system", findings)
+```
 
-3. **Use specialized agents for complex workflows:**
-   - Research: "Use the research-specialist agent to find authentication best practices"
-   - Implementation: "Use the implementation-engineer agent to build the API"
-   - Documentation: "Use the document-architect agent to create user guide"
+### Using Existing Memories
 
-4. **Review patterns:**
-   ```
-   /playbook-search WebFetch
-   /playbook-search authentication
-   ```
+```
+User: Add JWT authentication
+Claude:
+  1. activate_project(current_directory)
+  2. check_onboarding_performed()
+  3. read_memory("auth-system")
+  4. read_memory("code_style")
+  5. Implement with symbol tools
+```
+
+## Key Patterns
+
+### 1. Serena's Memory System (NOT .agent-notes)
+
+**The plugin teaches using `.serena/memories/` (built into Serena):**
+
+```markdown
+## Storing Research
+write_memory("jwt-research", """
+# JWT Authentication Research
+
+## Libraries Evaluated
+- jsonwebtoken: Most popular, 15M weekly downloads
+- jose: Modern, spec-compliant
+...
+
+Source: WebSearch "nodejs jwt libraries"
+""")
+
+## Loading Research
+jwt_info = read_memory("jwt-research")
+```
+
+**NOT creating `.agent-notes/` files manually.**
+
+### 2. Task Decomposition (Eigent Pattern)
+
+For complex tasks, the plugin teaches breaking them into parallel subtasks with clear dependencies.
+
+### 3. Symbol-First Navigation (Serena Pattern)
+
+**Before:**
+```
+read_file("src/auth.ts")  # 800 lines, wasteful
+```
+
+**After (Plugin Teaches):**
+```
+get_symbols_overview("src/auth.ts")  # See structure first
+find_symbol("AuthService", depth=1)   # Get class + methods
+find_symbol("AuthService/login", include_body=true)  # Read specific method
+```
+
+### 4. Verification Workflow (Eigent Pattern)
+
+Build → Test → Verify at every step, not just at the end.
+
+## Usage Examples
+
+### Example 1: Codebase Analysis
+
+```
+User: Understand the payment processing system
+
+Plugin guides Claude to:
+1. activate_project(cwd)
+2. check_onboarding_performed()
+3. If no memories:
+   - onboarding()
+   - find_symbol("payment", substring_matching=true)
+   - find_symbol("PaymentProcessor", depth=1)
+   - find_referencing_symbols("PaymentProcessor", ...)
+   - write_memory("payment-system", findings)
+4. If has memories:
+   - read_memory("payment-system")
+   - Update with new findings
+```
+
+### Example 2: Multi-Agent Task
+
+```
+User: Research auth libraries, implement JWT, document it
+
+Plugin guides Claude to:
+1. Decompose into 3 parallel tracks
+2. research-specialist agent:
+   - WebSearch for JWT libraries
+   - write_memory("jwt-research", findings)
+3. implementation-engineer agent:
+   - read_memory("jwt-research")
+   - read_memory("code_style")
+   - Implement with symbol tools
+   - write_memory("jwt-implementation", decisions)
+4. document-architect agent:
+   - Create user-facing docs
+```
 
 ## File Structure
 
@@ -184,145 +242,99 @@ workforce-assistant/
 │   ├── plugin.json          # Plugin manifest
 │   └── hooks.json           # Hook configurations
 ├── hooks/
-│   ├── tool-logger.sh       # Auto-logs tool usage
-│   ├── research-capture.sh  # Auto-captures research
-│   ├── safe-mode-guard.sh   # Validates destructive commands
-│   ├── context-checkpoint.sh # Progress checkpoints
-│   └── session-reporter.sh  # Session completion reports
+│   └── safe-mode-guard.sh   # Validates destructive commands
 ├── skills/
-│   ├── task-decomposer/     # Task breakdown skill (Eigent)
-│   ├── result-formatter/    # Structured results skill (Eigent)
-│   ├── url-validator/       # URL sourcing policy skill (Eigent)
-│   ├── symbol-navigator/    # Symbol tool guidance (Serena)
-│   ├── code-structure-analyst/ # Codebase exploration (Serena)
-│   └── refactoring-coordinator/ # Safe refactoring (Serena)
+│   ├── serena-setup/        # Core Serena workflow
+│   ├── symbol-navigator/    # Symbol tool guidance
+│   ├── code-structure-analyst/ # Systematic exploration
+│   ├── refactoring-coordinator/ # Safe refactorings
+│   ├── task-decomposer/     # Task breakdown (Eigent)
+│   ├── result-formatter/    # Structured results (Eigent)
+│   └── url-validator/       # URL sourcing (Eigent)
 ├── agents/
-│   ├── research-specialist.md      # Research-focused agent (Eigent)
-│   ├── implementation-engineer.md  # Implementation agent (Eigent)
-│   ├── document-architect.md       # Documentation agent (Eigent)
-│   └── code-archeologist.md        # Codebase analysis agent (Serena)
-├── commands/
-│   ├── workspace-init.md    # Initialize directories
-│   └── playbook-search.md   # Search tool patterns
+│   ├── code-archeologist.md      # Codebase analysis (Serena)
+│   ├── research-specialist.md    # Research (Eigent + Serena memories)
+│   ├── implementation-engineer.md # Implementation (Eigent)
+│   └── document-architect.md     # Documentation (Eigent)
 ├── docs/
-│   └── serena-integration.md # Serena integration guide
+│   └── serena-integration.md # Detailed Serena workflows
 └── README.md
 ```
 
 ## Generated Artifacts
 
-The plugin automatically creates `.agent-notes/` with:
+**Serena creates `.serena/` in each project:**
+- `memories/*.md` - Cross-session knowledge (write_memory)
+- `cache/` - LSP symbol cache (pre-indexing)
+- `project.yml` - Project configuration
 
-- `tool-usage-log.md` - Chronological tool usage (all tools)
-- `research-YYYY-MM-DD.md` - Dated research findings with citations
-- `checkpoints-YYYY-MM-DD.md` - Context compaction markers
-- `session-report-YYYY-MM-DD.md` - Session completion summaries
-
-## Usage Examples
-
-### Complex Multi-Step Task
-
-**User:** "Research authentication best practices, implement JWT auth, and document the API"
-
-**Claude with Plugin:**
-1. Task decomposer skill activates → identifies 3 parallel tracks
-2. Spawns research-specialist agent → WebSearch/WebFetch captured automatically
-3. Spawns implementation-engineer agent → builds with verification at each step
-4. Spawns document-architect agent → creates docs from artifacts
-5. All research auto-saved to `.agent-notes/research-YYYY-MM-DD.md`
-6. Tool usage logged for future playbook reference
-7. Session end hook creates completion summary
-
-### Research-Heavy Task
-
-**User:** "Find the top 5 Node.js authentication libraries and compare them"
-
-**Claude with Plugin:**
-- Research-specialist agent handles with WebSearch
-- Every WebFetch result auto-captured with URL citation
-- Detailed findings in `.agent-notes/research-YYYY-MM-DD.md`
-- No manual note-taking needed
-- URL validator ensures no fabricated sources
-
-### Implementation Task
-
-**User:** "Add user authentication to the API"
-
-**Claude with Plugin:**
-- Implementation-engineer agent selected
-- Reads `.agent-notes/research-*.md` for technical decisions
-- Implements with Build → Test → Verify cycles
-- Safe mode validates any destructive operations
-- Structured result with verification checklist
-- Tool usage logged for pattern building
-
-### Codebase Analysis with Serena
-
-**User:** "Understand the authentication system in this codebase"
-
-**Claude with Plugin + Serena:**
-- Code-archeologist agent activated
-- Uses `get_symbols_overview` to see structure without reading full files
-- Applies `find_symbol("authenticate")` to locate auth-related code
-- Runs `find_referencing_symbols` to map dependencies
-- Creates comprehensive documentation in `.agent-notes/auth-system.md`
-- 80% token reduction compared to file reading
-- Symbol locations preserved for implementation team
+**Plugin teaches using these, not creating parallel systems.**
 
 ## Philosophy
 
-### Automation Over Manual Commands
+### Use Serena's Systems, Don't Duplicate Them
 
-- Hooks run automatically → no need to remember to log
-- Skills activate based on context → no need to invoke
-- Sub-agents self-select → no need to coordinate
-- Notes captured automatically → no manual documentation
+- ✅ Use `write_memory()` for persistence
+- ❌ Don't create `.agent-notes/` manually
+- ✅ Use Serena's `onboarding()` workflow
+- ❌ Don't duplicate onboarding logic
+- ✅ Use `activate_project()` first
+- ❌ Don't assume symbol tools "just work"
 
-### Transparency Through Notes
+### Symbol-First, Always
 
-- Every research finding cited with source URL
-- Tool usage patterns logged for playbook building
-- Implementation decisions traceable to research
-- Cross-session continuity through persistent artifacts
+- Get overview before reading full files
+- Use name paths for precise targeting
+- Expect first-time slowness (LSP parsing)
+- Recommend pre-indexing for large projects
 
-### Verification at Every Step
+### Verification-Driven
 
-- Safe mode prevents destructive operations
-- Continuous build/test cycles during implementation
-- Structured results with verification checklists
-- Context checkpoints preserve progress
+- Build → Test → Verify cycles
+- Not extensive coding then test
+- Incremental validation
 
-## Debugging
+## Troubleshooting
 
-Enable detailed logging:
+### "Tool not found: get_symbols_overview"
+
+**Problem:** Serena MCP server not configured
+
+**Solution:**
 ```bash
-claude --debug
+claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project "$(pwd)"
 ```
 
-Check hook execution in output.
+### "No active project"
 
-View plugin status:
+**Problem:** Forgot to activate project
+
+**Solution:**
+```python
+activate_project("/path/to/project")
 ```
-/hooks
-/skills
-/agents
+
+### "Symbol tools are slow"
+
+**Problem:** LSP parsing files for first time
+
+**Solution:**
+```bash
+# Pre-index project
+uvx --from git+https://github.com/oraios/serena serena project index
 ```
 
 ## References
 
-**Core Inspirations:**
+**Core Systems:**
+- [Serena MCP Server](https://github.com/oraios/serena) - LSP-based symbol tools
 - [Eigent Project](https://github.com/eigent-ai/eigent) - Multi-agent workforce patterns
-- [Serena MCP Server](https://github.com/exa-labs/serena) - LSP-based symbol tools
 - [CAMEL-AI Framework](https://github.com/camel-ai/camel) - Foundation for Eigent
 
 **Documentation:**
-- [Claude Code Plugins Documentation](https://docs.claude.com/en/docs/claude-code/plugins)
-- [Serena Integration Guide](docs/serena-integration.md) - Full integration walkthrough
-- [Eigent Insights Analysis](./eigent/insights.md) - Original analysis
-
-## Contributing
-
-This plugin is in the `claude-plugins` repository as a demonstration of eigent-inspired patterns adapted to Claude Code.
+- [Claude Code Plugins](https://docs.claude.com/en/docs/claude-code/plugins)
+- [Serena Integration Guide](docs/serena-integration.md) - Detailed workflows
+- [Model Context Protocol](https://modelcontextprotocol.io/) - MCP specification
 
 ## License
 

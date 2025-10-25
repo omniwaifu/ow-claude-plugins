@@ -66,11 +66,15 @@ This prevents framework convention mistakes (like using `src/` for FastAPI or si
 3. **Set up correct structure** before writing code
 
 **For all implementations:**
-1. **Read Research Notes**: Check `.agent-notes/research-*.md` for decisions
+1. **Read Memories**: Check `.serena/memories/` for:
+   - `read_memory("code_style")` - Follow project conventions
+   - `read_memory("suggested_commands")` - Know how to test/build
+   - `read_memory("[research-topic]")` - Use research findings
+   - `read_memory("task_completion_checklist")` - Know when done
 2. **Make Change**: Write/edit code for one logical unit
 3. **Verify Change**: Run build/tests immediately
 4. **Fix Issues**: Address any errors before proceeding
-5. **Document**: Note what was done and verified
+5. **Document**: Use `write_memory()` to persist implementation decisions
 6. **Repeat**: Move to next change
 
 ### Tool Access
