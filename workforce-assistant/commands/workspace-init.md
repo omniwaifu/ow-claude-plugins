@@ -1,65 +1,73 @@
-Create the workspace directory structure for the workforce-assistant plugin. This command sets up:
-
-1. `.workspace/` - Sandboxed working directories for parallel agents
-2. `.agent-notes/` - Directory for cross-session notes and research
+Initialize workspace directories and activate Serena project.
 
 Execute these steps:
 
-1. Create the directory structure:
+1. Create directory structure:
    ```bash
    mkdir -p .workspace/{research,implementation,testing}
    mkdir -p .agent-notes
    ```
 
-2. Create a README in `.agent-notes/` explaining the purpose:
+2. Create agent notes README:
    ```bash
    cat > .agent-notes/README.md << 'EOF'
-   # Agent Notes Directory
+# Agent Notes Directory
 
-   This directory contains automatically generated notes from the workforce-assistant plugin.
+Auto-generated notes from workforce-assistant plugin.
 
-   ## Files
+## Files
+- `research-YYYY-MM-DD.md` - Research findings with citations
+- `tool-usage-log.md` - Tool usage patterns for playbooks
+- `checkpoints-YYYY-MM-DD.md` - Context compaction markers
+- `session-report-YYYY-MM-DD.md` - Session summaries
 
-   - `research-YYYY-MM-DD.md` - Research findings with citations (auto-captured from WebFetch/WebSearch)
-   - `tool-usage-log.md` - Tool usage patterns for building playbooks
-   - `checkpoints-YYYY-MM-DD.md` - Context compaction markers
-   - `session-report-YYYY-MM-DD.md` - Session completion summaries
-
-   ## Purpose
-
-   These notes provide:
-   - Cross-session continuity (remember what was researched)
-   - Decision rationale (why choices were made)
-   - Implementation patterns (what tools/approaches worked)
-   - Context for new sessions (catch up on previous work)
-
-   ## Usage
-
-   - Research Specialist writes detailed findings here
-   - Implementation Engineer reads notes before coding
-   - Document Architect uses notes for comprehensive docs
-   - All agents reference notes for context
-
-   ## Inspired by
-
-   Eigent's note-taking system for multi-agent coordination.
-   EOF
+## Purpose
+- Cross-session continuity
+- Decision rationale
+- Implementation patterns
+- Context for new sessions
+EOF
    ```
 
-3. Create a `.gitignore` entry to optionally exclude notes:
+3. Update .gitignore:
    ```bash
    echo "" >> .gitignore
-   echo "# Workforce Assistant - uncomment to exclude agent notes from git" >> .gitignore
+   echo "# Workforce Assistant" >> .gitignore
    echo "# .agent-notes/" >> .gitignore
    echo "# .workspace/" >> .gitignore
    ```
 
-4. Report completion:
-   - Workspace structure created
-   - Notes directory initialized
-   - Ready for multi-agent workflows
+4. Activate Serena:
+   ```python
+   # Start LSP server
+   activate_project(current_directory)
 
-The workspace is now ready for:
-- Parallel agent execution in isolated directories
-- Automatic research capture and note-taking
-- Cross-session continuity through persistent notes
+   # Check onboarding status
+   status = check_onboarding_performed()
+
+   # If not onboarded: call onboarding() and follow its prompt
+   # If onboarded: list_memories() and read_memory() as needed
+   ```
+
+5. Report completion:
+   - Directory structure: created
+   - Serena project: activated
+   - Memories: loaded/created
+   - Status: ready
+
+## Purpose
+
+One-command bootstrap for:
+- Workspace directories (agent sandboxing)
+- Agent notes (cross-session continuity)
+- Serena activation (LSP + memory system)
+
+## Troubleshooting
+
+**"Tool not found: activate_project"**
+- Install: `pip install serena-mcp`
+- Configure in Claude Code MCP settings
+- See: workforce-assistant/docs/serena-integration.md
+
+**Slow symbol tools**
+- Recommend: `uvx --from git+https://github.com/oraios/serena serena project index`
