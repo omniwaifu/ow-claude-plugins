@@ -62,12 +62,50 @@ One-command bootstrap for:
 - Agent notes (cross-session continuity)
 - Serena activation (LSP + memory system)
 
+## Recommended Tools
+
+### Serena (Required)
+**Purpose:** Symbol navigation and memory persistence
+
+**Installation:**
+```bash
+claude mcp add serena -- uvx --from git+https://github.com/oraios/serena \
+  serena start-mcp-server --context ide-assistant --project "$(pwd)"
+```
+
+**Provides:**
+- LSP-based symbol navigation
+- Project onboarding system
+- Cross-session memory persistence
+- Language-aware refactoring
+
+### Context7 (Recommended)
+**Purpose:** Up-to-date library documentation retrieval
+
+**Installation:**
+```bash
+claude mcp add context7 [installation-command]
+```
+
+**Provides:**
+- Authoritative library documentation
+- Current API references
+- Code examples from official sources
+- Reduces hallucination on library usage
+
+**Use Case:** Automatically queries Context7 when agents detect library/framework questions.
+
 ## Troubleshooting
 
 **"Tool not found: activate_project"**
-- Install: `pip install serena-mcp`
+- Install Serena: See "Recommended Tools" section above
 - Configure in Claude Code MCP settings
 - See: workforce-assistant/docs/serena-integration.md
+
+**"Tool not found: resolve-library-id"**
+- Context7 is optional but recommended
+- Agents will fall back to web search if unavailable
+- Install: See "Recommended Tools" section above
 
 **Slow symbol tools**
 - Recommend: `uvx --from git+https://github.com/oraios/serena serena project index`
