@@ -6,7 +6,7 @@ Personal marketplace of Claude Code plugins.
 
 ### workforce-assistant
 
-Automated hooks, task decomposition skills, and specialized agents. Integrates [Eigent](https://github.com/eigent-ai/eigent) patterns and [Serena](https://github.com/exa-labs/serena) symbol tools.
+Behavioral nudges and automation to make Claude Code effectively use Serena's symbol-aware tools and Context7 library documentation. Features auto-activating skills, tool-restricted subagents, and behavioral hooks.
 
 ## Installation
 

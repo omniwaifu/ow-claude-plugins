@@ -8,8 +8,8 @@ set -euo pipefail
 # Parse hook data from stdin
 HOOK_DATA=$(cat)
 
-# Extract tool information
-TOOL_NAME=$(echo "$HOOK_DATA" | jq -r '.tool // "unknown"')
+# Extract tool information (correct field names from Claude Code)
+TOOL_NAME=$(echo "$HOOK_DATA" | jq -r '.tool_name // "unknown"')
 
 # Only process WebFetch and WebSearch tools
 if [[ "$TOOL_NAME" != "WebFetch" ]] && [[ "$TOOL_NAME" != "WebSearch" ]]; then
@@ -18,8 +18,8 @@ if [[ "$TOOL_NAME" != "WebFetch" ]] && [[ "$TOOL_NAME" != "WebSearch" ]]; then
 fi
 
 # Extract details
-TOOL_ARGS=$(echo "$HOOK_DATA" | jq -r '.args // {}')
-TOOL_RESULT=$(echo "$HOOK_DATA" | jq -r '.result // ""')
+TOOL_ARGS=$(echo "$HOOK_DATA" | jq -r '.tool_input // {}')
+TOOL_RESULT=$(echo "$HOOK_DATA" | jq -r '.tool_response // ""')
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 DATE_ONLY=$(date -u +"%Y-%m-%d")
 
