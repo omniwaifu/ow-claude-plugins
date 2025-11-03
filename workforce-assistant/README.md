@@ -23,6 +23,8 @@ Skills trigger automatically based on context (no manual invocation needed):
 - `task-breakdown-specialist` - Break complex tasks into subtasks
 - `structured-completion-reporter` - Format task completion reports
 - `citation-discipline-enforcer` - Enforce URL sourcing policy
+- `project-knowledge-base` - Schema for capturing project-specific patterns/stack/footguns
+- `opportunistic-learning` - Auto-capture knowledge on trigger events (corrections, bugs, decisions)
 
 ### 2. Tool-Restricted Subagents
 Specialized agents with constrained tool access:
@@ -69,6 +71,7 @@ claude mcp add context7 -- npx -y @context7/mcp-server
 1. Install plugin (above)
 2. In any code project, run `/workspace-init` to activate Serena
 3. Hooks automatically nudge Claude to use symbol tools and persist discoveries
+4. Run `/session-reflect` before ending work to capture session knowledge
 
 ## How It Works
 
@@ -117,7 +120,7 @@ workforce-assistant/
 
 ## Version
 
-1.2.0 - Pure automation focus
+1.3.0 - Project knowledge capture (opportunistic learning)
 
 ## License
 
