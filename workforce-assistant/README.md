@@ -25,6 +25,7 @@ Skills trigger automatically based on context (no manual invocation needed):
 - `citation-discipline-enforcer` - Enforce URL sourcing policy
 - `project-knowledge-base` - Schema for capturing project-specific patterns/stack/footguns
 - `opportunistic-learning` - Auto-capture knowledge on trigger events (corrections, bugs, decisions)
+- `claude-code-reference` - Technical reference for plugin system mechanics (hooks/skills/agents/commands/MCP)
 
 ### 2. Tool-Restricted Subagents
 Specialized agents with constrained tool access:
@@ -120,7 +121,7 @@ workforce-assistant/
 
 ## Version
 
-1.3.0 - Project knowledge capture (opportunistic learning)
+1.3.1 - Claude Code plugin system reference skill
 
 ## License
 
