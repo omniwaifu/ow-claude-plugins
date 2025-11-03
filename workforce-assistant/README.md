@@ -64,7 +64,7 @@ claude mcp add serena -- uvx --from git+https://github.com/oraios/serena \
 
 **Context7 (optional but recommended):**
 ```bash
-claude mcp add context7 -- npx -y @context7/mcp-server
+claude mcp add context7 -- npx -y @upstash/context7-mcp
 ```
 
 ## Quick Start
@@ -121,7 +121,7 @@ workforce-assistant/
 
 ## Version
 
-1.3.1 - Claude Code plugin system reference skill
+1.3.2 - Fix Context7 MCP package name
 
 ## License
 
