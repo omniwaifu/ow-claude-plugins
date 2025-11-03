@@ -46,12 +46,23 @@ Automatic reminders at decision points:
 
 ## Installation
 
+**Per-Project (Recommended):**
 ```bash
-# Add this plugin's marketplace
-claude plugin marketplace add ./
+# Add marketplace once (if not already added)
+claude plugin marketplace add /mnt/data/Code/ow-claude-plugins
 
-# Install the plugin
+# In each project you want to use it:
+cd /path/to/project
 claude plugin install workforce-assistant@omniwaifu-claude-plugins-local
+```
+
+**Global (All Projects):**
+```bash
+# Add marketplace
+claude plugin marketplace add /mnt/data/Code/ow-claude-plugins
+
+# Install globally
+claude plugin install workforce-assistant@omniwaifu-claude-plugins-local --global
 ```
 
 ## Requirements
