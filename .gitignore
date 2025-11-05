@@ -1,6 +1,7 @@
 # Runtime directories (created by plugins when in use)
 .agent-notes/
 .workspace/
+.serena/
 
 # OS files
 .DS_Store
