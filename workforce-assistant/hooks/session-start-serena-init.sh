@@ -45,13 +45,13 @@ if [ -d ".serena" ] || [ -f "package.json" ] || [ -f "pyproject.toml" ] || [ -f 
 🔧 Code Project Detected - Serena Available
 
 IMPORTANT: Before ANY code operations:
-1. initial_instructions() - Read Serena manual
-2. Activate project for current directory
-3. check_onboarding_performed()
+1. Project automatically activates via Serena MCP
+2. check_onboarding_performed()
    → If NOT done: Run onboarding() workflow
    → If done: list_memories() and load relevant ones
 
 Previous session knowledge persists in .serena/memories/
+Claude Code 1.0.52+ automatically loads Serena instructions.
 PROMPT
 
   # Add language hint if detected

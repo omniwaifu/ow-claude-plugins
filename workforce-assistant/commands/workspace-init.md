@@ -15,11 +15,8 @@ Execute these steps:
 
 2. Activate Serena:
    ```
-   # Read Serena manual
-   mcp__plugin_workforce-assistant_serena__initial_instructions()
-
-   # Activate LSP server for current directory
-   # (Project activation happens automatically via Serena MCP)
+   # Project activation happens automatically via Serena MCP
+   # (Claude Code 1.0.52+ automatically loads Serena instructions)
 
    # Check onboarding status
    mcp__plugin_workforce-assistant_serena__check_onboarding_performed()
@@ -52,10 +49,6 @@ claude mcp add context7 -- npx -y @context7/mcp-server
 ```
 
 ## Troubleshooting
-
-**"Tool not found: initial_instructions"**
-- Serena MCP not installed
-- Install using command above
 
 **Slow symbol tools on first use**
 - Serena is parsing codebase (one-time operation)

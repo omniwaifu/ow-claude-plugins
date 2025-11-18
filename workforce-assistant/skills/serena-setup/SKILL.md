@@ -9,23 +9,19 @@ description: Activates Serena LSP server and runs onboarding workflow for codeba
 
 When working with a codebase project:
 
-1. **Read Serena Manual**
+1. **Project Activates Automatically**
    ```
-   mcp__plugin_workforce-assistant_serena__initial_instructions()
-   ```
-
-2. **Activate Project**
-   ```
-   # Activate LSP server for current directory
-   # (Serena auto-detects language and starts appropriate LSP)
+   # Serena MCP auto-activates for current directory
+   # (Auto-detects language and starts appropriate LSP)
+   # Claude Code 1.0.52+ automatically loads Serena instructions
    ```
 
-3. **Check Onboarding Status**
+2. **Check Onboarding Status**
    ```
    mcp__plugin_workforce-assistant_serena__check_onboarding_performed()
    ```
 
-4. **If Not Onboarded - Run Onboarding**
+3. **If Not Onboarded - Run Onboarding**
    ```
    mcp__plugin_workforce-assistant_serena__onboarding()
    # Follow the onboarding prompt - it will guide you through:
@@ -34,7 +30,7 @@ When working with a codebase project:
    # - Recording suggested_commands for build/test
    ```
 
-5. **If Already Onboarded - Load Memories**
+4. **If Already Onboarded - Load Memories**
    ```
    mcp__plugin_workforce-assistant_serena__list_memories()
    # Then read relevant ones:
