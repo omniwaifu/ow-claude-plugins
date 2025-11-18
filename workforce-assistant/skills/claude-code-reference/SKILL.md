@@ -25,6 +25,30 @@ description: Technical reference for Claude Code plugin system (hooks, skills, a
 **Output:** Exit codes (0=success, 2=blocking error, other=non-blocking)
 **Scripts:** Must be executable (`chmod +x`)
 
+### Hook Types
+
+**Command-based (script execution):**
+```json
+{
+  "type": "command",
+  "command": "./path/to/script.sh",
+  "description": "What this hook does",
+  "timeout": 60
+}
+```
+
+**Prompt-based (LLM evaluation):**
+```json
+{
+  "type": "prompt",
+  "prompt": "Evaluate if condition is met...",
+  "model": "haiku",
+  "timeout": 30
+}
+```
+
+**Model parameter (v2.0.41+):** Specify which model evaluates prompt-based stop hooks (default: haiku)
+
 ### Events & Matchers
 
 | Event | When | Matcher |
@@ -36,6 +60,7 @@ description: Technical reference for Claude Code plugin system (hooks, skills, a
 | SessionStart | Init/resume | startup/resume/clear/compact |
 | SessionEnd | Termination | No matcher |
 | Stop | Main agent done | No matcher |
+| SubagentStart | Subagent starts (v2.0.43+) | No matcher |
 | SubagentStop | Subagent done | No matcher |
 
 ### Exit Codes
@@ -144,10 +169,20 @@ name: agent-id
 description: "Natural language purpose"
 tools: "Read,Edit,Bash"  # omit = all tools
 model: "sonnet"  # or 'inherit'
+skills: skill-name-1, skill-name-2  # optional: auto-load skills for agent (v2.0.43+)
+permissionMode: plan  # optional: default | acceptEdits | plan (v2.0.43+)
 ---
 
 System prompt with instructions
 ```
+
+### Permission Modes (v2.0.43+)
+
+- **default**: Standard approval prompts
+- **acceptEdits**: Auto-accept file edits
+- **plan**: Read-only analysis mode (no modifications allowed)
+
+Use `plan` for read-only agents like archeologists/analyzers.
 
 ### Constraints
 - **Cannot spawn other subagents**

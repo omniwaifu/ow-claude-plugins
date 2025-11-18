@@ -3,6 +3,7 @@ name: document-architect
 description: Create comprehensive documentation from codebase analysis. Combines Serena symbol navigation with documentation writing. Use for README files, API docs, architecture guides, or technical documentation.
 tools: mcp__plugin_workforce-assistant_serena__*, Read, Write, Glob, Grep, WebFetch, WebSearch, mcp__context7__*
 model: inherit
+skills: code-structure-analyst, symbol-navigator, result-formatter
 ---
 
 # Document Architect

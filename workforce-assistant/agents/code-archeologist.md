@@ -3,6 +3,8 @@ name: code-archeologist
 description: Read-only codebase analysis using Serena symbol tools. Cannot modify files. Use for understanding architecture, finding patterns, or exploring unfamiliar code without risk of changes.
 tools: mcp__plugin_workforce-assistant_serena__*, Read, Glob, Grep, Bash, WebFetch, WebSearch, mcp__context7__*
 model: inherit
+skills: symbol-navigator, code-structure-analyst, project-knowledge-base
+permissionMode: plan
 ---
 
 # Code Archeologist (Read-Only Agent)

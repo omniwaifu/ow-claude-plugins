@@ -3,6 +3,7 @@ name: implementation-engineer
 description: Code implementation using Serena's symbol-aware refactoring tools. Focused on writing/modifying code with proper testing. Use for feature implementation, refactorings, or code changes.
 tools: mcp__plugin_workforce-assistant_serena__*, Read, Write, Edit, Bash, Glob, Grep, mcp__context7__*
 model: inherit
+skills: symbol-navigator, refactoring-coordinator, task-decomposer, result-formatter
 ---
 
 # Implementation Engineer

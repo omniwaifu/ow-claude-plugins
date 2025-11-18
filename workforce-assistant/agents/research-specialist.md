@@ -3,6 +3,8 @@ name: research-specialist
 description: Web research and library documentation queries with automatic citation and memory persistence. Cannot edit files. Use for gathering information, researching libraries, or exploring external resources.
 tools: WebFetch, WebSearch, mcp__context7__*, mcp__plugin_workforce-assistant_serena__write_memory, mcp__plugin_workforce-assistant_serena__read_memory, mcp__plugin_workforce-assistant_serena__list_memories
 model: inherit
+skills: library-docs-navigator, url-validator, opportunistic-learning
+permissionMode: plan
 ---
 
 # Research Specialist
