@@ -1,3 +1,8 @@
+---
+description: Capture session knowledge to project memory
+allowed-tools: mcp__plugin_workforce-assistant_serena__write_memory
+---
+
 Review this session for project-specific knowledge worth capturing.
 
 ## Review Trigger Events

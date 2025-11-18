@@ -1,3 +1,8 @@
+---
+description: Initialize workspace and activate Serena
+allowed-tools: Bash, mcp__plugin_workforce-assistant_serena__*
+---
+
 Initialize workspace and activate Serena for current project.
 
 Execute these steps:

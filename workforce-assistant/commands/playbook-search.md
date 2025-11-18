@@ -1,3 +1,9 @@
+---
+description: Search tool usage log for patterns
+allowed-tools: Bash
+argument-hint: <keyword>
+---
+
 Search the tool usage log for patterns matching the keyword provided.
 
 This command helps you discover effective tool usage patterns that have been automatically logged during previous sessions.
@@ -16,7 +22,7 @@ Execute these steps:
 
 2. Search for the keyword in the tool usage log:
    ```bash
-   KEYWORD="{{ARGS}}"
+   KEYWORD="$ARGUMENTS"
 
    if [ -z "$KEYWORD" ]; then
      echo "Usage: /playbook-search <keyword>"
