@@ -44,6 +44,18 @@ Automatic reminders at decision points:
 - **PostToolUse(check_onboarding)** → Auto-suggest loading memories
 - **PreToolUse(Bash)** → Safe mode validation for destructive commands
 
+### 4. Workforce Mode Output Style
+Custom output style that reinforces symbol-first workflows:
+- Symbol-first exploration (get_symbols_overview, find_symbol)
+- Memory persistence after discoveries (write_memory)
+- Context7 for library documentation
+- Safe refactoring patterns (Find → Verify → Refactor → Test)
+- Symbol-aware code changes (replace_symbol_body, rename_symbol)
+
+**Enable it:** `/output-style workforce-assistant:workforce-mode`
+
+This provides always-on behavioral reinforcement at the system prompt level, complementing the contextual skills.
+
 ## Installation
 
 **Per-Project (Recommended):**
@@ -82,8 +94,9 @@ claude mcp add context7 -- npx -y @upstash/context7-mcp
 
 1. Install plugin (above)
 2. In any code project, run `/workspace-init` to activate Serena
-3. Hooks automatically nudge Claude to use symbol tools and persist discoveries
-4. Run `/session-reflect` before ending work to capture session knowledge
+3. (Optional) Enable output style: `/output-style workforce-assistant:workforce-mode`
+4. Hooks automatically nudge Claude to use symbol tools and persist discoveries
+5. Run `/session-reflect` before ending work to capture session knowledge
 
 ## How It Works
 
@@ -112,7 +125,8 @@ workforce-assistant/
 ├── skills/              # Auto-activating behavioral guides (~50 lines each)
 ├── agents/              # Tool-restricted subagents (~50 lines each)
 ├── hooks/               # Behavioral nudge hooks (~30 lines each)
-├── commands/            # Slash commands (/workspace-init)
+├── commands/            # Slash commands (/workspace-init, /codebase-todo-sweep)
+├── output-styles/       # Custom output style (workforce-mode)
 └── .claude-plugin/      # Plugin metadata
 ```
 
@@ -132,7 +146,7 @@ workforce-assistant/
 
 ## Version
 
-1.3.2 - Fix Context7 MCP package name
+1.4.0 - Add workforce-mode output style, codebase-todo-sweep command, v2.0.41-43 features support
 
 ## License
 
