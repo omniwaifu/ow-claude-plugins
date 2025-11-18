@@ -2,7 +2,6 @@
 description: Analyze codebase and insert TODO comments for code issues
 allowed-tools: mcp__plugin_workforce-assistant_serena__*, Read, Edit, Grep, Glob, Bash
 argument-hint: [scan|apply|clean] [path]
-model: sonnet
 ---
 
 # Codebase TODO Sweep
